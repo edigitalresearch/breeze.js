@@ -1190,6 +1190,7 @@ var EntityType = (function () {
     this.dataProperties = [];
     this.navigationProperties = [];
     this.complexProperties = [];
+    this.nonScalarPrimitiveProperties = [];
     this.keyProperties = [];
     this.foreignKeyProperties = [];
     this.inverseForeignKeyProperties = [];
@@ -1993,6 +1994,10 @@ var EntityType = (function () {
       this.complexProperties.push(dp);
     }
 
+    if (!dp.isComplexProperty && !dp.isScalar) {
+      this.nonScalarPrimitiveProperties.push(dp);
+    }
+
     if (dp.concurrencyMode && dp.concurrencyMode !== "None") {
       this.concurrencyProperties.push(dp);
     }
@@ -2142,6 +2147,7 @@ var ComplexType = (function () {
     this.isComplexType = true;
     this.dataProperties = [];
     this.complexProperties = [];
+    this.nonScalarPrimitiveProperties = [];
     this.validators = [];
     this.concurrencyProperties = [];
     this.unmappedProperties = [];

@@ -3710,6 +3710,10 @@ var EntityAspect = (function () {
     for (var propName in originalValues) {
       target.setProperty(propName, originalValues[propName]);
     }
+    stype.nonScalarPrimitiveProperties.forEach(function (ns) {
+      var cos = target.getProperty(ns.name);
+      cos._rejectChanges();
+    });
     stype.complexProperties.forEach(function (cp) {
       var cos = target.getProperty(cp.name);
       if (cp.isScalar) {
@@ -3853,6 +3857,10 @@ var EntityAspect = (function () {
     var aspect = target.entityAspect || target.complexAspect;
     aspect.originalValues = {};
     var stype = target.entityType || target.complexType;
+    stype.nonScalarPrimitiveProperties.forEach(function (ns) {
+      var cos = target.getProperty(ns.name);
+      cos._acceptChanges();
+    });
     stype.complexProperties.forEach(function (cp) {
       var cos = target.getProperty(cp.name);
       if (cp.isScalar) {
@@ -7414,6 +7422,7 @@ var EntityType = (function () {
     this.dataProperties = [];
     this.navigationProperties = [];
     this.complexProperties = [];
+    this.nonScalarPrimitiveProperties = [];
     this.keyProperties = [];
     this.foreignKeyProperties = [];
     this.inverseForeignKeyProperties = [];
@@ -8217,6 +8226,10 @@ var EntityType = (function () {
       this.complexProperties.push(dp);
     }
 
+    if (!dp.isComplexProperty && !dp.isScalar) {
+      this.nonScalarPrimitiveProperties.push(dp);
+    }
+
     if (dp.concurrencyMode && dp.concurrencyMode !== "None") {
       this.concurrencyProperties.push(dp);
     }
@@ -8366,6 +8379,7 @@ var ComplexType = (function () {
     this.isComplexType = true;
     this.dataProperties = [];
     this.complexProperties = [];
+    this.nonScalarPrimitiveProperties = [];
     this.validators = [];
     this.concurrencyProperties = [];
     this.unmappedProperties = [];
@@ -15060,6 +15074,12 @@ var EntityManager = (function () {
       val = serializerFn ? serializerFn(prop, val) : val;
       if (val !== undefined) {
         result[fn(propName, prop)] = val;
+      }
+    });
+    stype.nonScalarPrimitiveProperties.forEach(function (ns) {
+      var coOrCos = entity.getProperty(ns.name);
+      if (coOrCos._origValues) {
+        result[fn(ns.name, ns)] = coOrCos;
       }
     });
     // any change to any complex object or array of complex objects returns the ENTIRE

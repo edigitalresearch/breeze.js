@@ -2342,6 +2342,12 @@ var EntityManager = (function () {
         result[fn(propName, prop)] = val;
       }
     });
+    stype.nonScalarPrimitiveProperties.forEach(function (ns) {
+      var coOrCos = entity.getProperty(ns.name);
+      if (coOrCos._origValues) {
+        result[fn(ns.name, ns)] = coOrCos;
+      }
+    });
     // any change to any complex object or array of complex objects returns the ENTIRE
     // current complex object or complex object array.  This is by design. Complex Objects
     // are atomic.

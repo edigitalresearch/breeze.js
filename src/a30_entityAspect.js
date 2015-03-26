@@ -251,6 +251,10 @@ var EntityAspect = (function () {
     for (var propName in originalValues) {
       target.setProperty(propName, originalValues[propName]);
     }
+    stype.nonScalarPrimitiveProperties.forEach(function (ns) {
+      var cos = target.getProperty(ns.name);
+      cos._rejectChanges();
+    });
     stype.complexProperties.forEach(function (cp) {
       var cos = target.getProperty(cp.name);
       if (cp.isScalar) {
@@ -394,6 +398,10 @@ var EntityAspect = (function () {
     var aspect = target.entityAspect || target.complexAspect;
     aspect.originalValues = {};
     var stype = target.entityType || target.complexType;
+    stype.nonScalarPrimitiveProperties.forEach(function (ns) {
+      var cos = target.getProperty(ns.name);
+      cos._acceptChanges();
+    });
     stype.complexProperties.forEach(function (cp) {
       var cos = target.getProperty(cp.name);
       if (cp.isScalar) {
