@@ -15419,8 +15419,7 @@ var MappingContext = (function () {
           if (meta.extraMetadata) {
             targetEntity.entityAspect.extraMetadata = meta.extraMetadata;
           }
-          targetEntity.entityAspect.entityState = EntityState.Unchanged;
-          targetEntity.entityAspect.originalValues = {};
+          targetEntity.entityAspect.setEntityState(EntityState.Unchanged);
           targetEntity.entityAspect.propertyChanged.publish({ entity: targetEntity, propertyName: null });
           var action = isSaving ? EntityAction.MergeOnSave : EntityAction.MergeOnQuery;
           em.entityChanged.publish({ entityAction: action, entity: targetEntity });
